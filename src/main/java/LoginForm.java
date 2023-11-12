@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author joshu
- */
+import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 public class LoginForm extends javax.swing.JFrame {
 
     /**
@@ -144,7 +141,28 @@ public class LoginForm extends javax.swing.JFrame {
     }//GEN-LAST:event_loginRegisterBtnActionPerformed
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        // TODO add your handling code here:
+        String username = loginUsername.getText();
+        String password = loginPassword.getText();
+
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/sql_oop_form", "root", "@J9shuajosh13")) {
+            String query = "SELECT * FROM users_creation WHERE username = ? AND password = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, password);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    JOptionPane.showMessageDialog(this, "Login successful!");
+                    // Add code here to open the main application window or perform other actions after successful login
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Login failed. Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_loginBtnActionPerformed
 
     /**
